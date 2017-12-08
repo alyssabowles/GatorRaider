@@ -76,12 +76,11 @@ public final class StudentController implements DefenderController
         //Pink Ghost
 
         //Pink ghost should always be chasing Pac-Man
-        if (pacmanNextMove != null){
+        if (pacmanNextMove != null)
             actions[1] = pink.getNextDir(pacmanNextMove, true);
-        }
-        else{
+        else
             actions[1] = pink.getNextDir(pacmanPosition, true);
-        }
+
 
         //When the ghost is vulnerable, flee from Pac-Man.
         if(pink.getVulnerableTime() > 0)
@@ -92,27 +91,18 @@ public final class StudentController implements DefenderController
         List<Node> pillList = game.getPowerPillList();
         boolean atPill = false;
 
-        for (int i = 0; i < pillList.size(); i++) {
-            if (game.checkPowerPill(pillList.get(i)) == true) {
+        /* Orange ghost should be moving around one of the corners of the board,
+         * as long as there is a power pill there.
+         */
+        for (int i = 0; i < pillList.size(); i++)
+        {
+            if (game.checkPowerPill(pillList.get(i)) == true)
+            {
                 actions[2] = orange.getNextDir(pillList.get(i), true);
-
-                //can't reverse direction, so it loops to guard the pill
-                int nextDirection = orange.getNextDir(pillList.get(i), atPill);
                 atPill = !atPill;
-
-
-                //Chase Pacman if he gets close, based off of a prediciton of where he's going
-                if(orange.getLocation().getPathDistance(pacmanPosition) < 25){
-                    if (pacmanNextMove != null){
-                        Node prediction = pacmanNextMove;
-                        actions[1] = orange.getNextDir(prediction, true);
-                    }
-                    else{
-                        actions[1] = orange.getNextDir(pacmanPosition, true);
-                    }
-                }
             }
         }
+        //If there are no more power pills, then it will just chase Pac-Man.
         if(pillList.size() == 0){
             actions[2] = orange.getNextDir(pacmanPosition, true);
         }
@@ -154,7 +144,7 @@ public final class StudentController implements DefenderController
                 actions[3] = blue.getNextDir(pacmanPosition, true);
             }
         }
-        
+
         return actions;
 	}
 }
