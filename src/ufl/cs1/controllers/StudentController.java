@@ -47,6 +47,8 @@ public final class StudentController implements DefenderController
         Defender orange = enemies.get(2);
         Defender blue = enemies.get(3);
 
+
+
         //Red ghost
 
         Node redPosition = red.getLocation();
@@ -58,11 +60,14 @@ public final class StudentController implements DefenderController
         /* If the distance from red ghost to pacman is less than 15 tiles, then it should
          * follow Pac-Man.
          */
-
-        if (distAway < 15) {
-            if (pacmanNextMove != null) {
+        if (distAway < 15)
+        {
+            if (pacmanNextMove != null)
+            {
                 actions[0] = red.getNextDir(pacmanNextMove, true);
-            } else {
+            }
+            else
+            {
                 actions[0] = red.getNextDir(redPosition, false);
             }
         }
@@ -73,18 +78,6 @@ public final class StudentController implements DefenderController
                 actions[0] = red.getNextDir(pacmanNextMove, true);
 
 
-        //Pink Ghost
-
-        //Pink ghost should always be chasing Pac-Man
-        if (pacmanNextMove != null)
-            actions[1] = pink.getNextDir(pacmanNextMove, true);
-        else
-            actions[1] = pink.getNextDir(pacmanPosition, true);
-
-
-        //When the ghost is vulnerable, flee from Pac-Man.
-        if(pink.getVulnerableTime() > 0)
-            actions[1]= pink.getNextDir(pacmanPosition,false);
 
         //Orange ghost
 
@@ -103,33 +96,33 @@ public final class StudentController implements DefenderController
             }
         }
         //If there are no more power pills, then it will just chase Pac-Man.
-        if(pillList.size() == 0){
+        if(pillList.size() == 0)
+        {
             actions[2] = orange.getNextDir(pacmanPosition, true);
         }
 
 
-        //Blue ghost
 
+        //Blue ghost
 
         //Determine if Pac man is close to a power pill, so blue can know to run away
         boolean pillIsClose = false;
 
-
-        for (int i = 0; i < pillList.size(); i++) {
-            if (game.checkPowerPill(pillList.get(i)) == true) {
-                if(pacmanPosition.getPathDistance(pillList.get(i)) < 10) {
+        for (int i = 0; i < pillList.size(); i++)
+        {
+            if (game.checkPowerPill(pillList.get(i)) == true)
+            {
+                if(pacmanPosition.getPathDistance(pillList.get(i)) < 10)
+                {
                     pillIsClose = true;
                     break;
                 }
-                else{
+                else
                     pillIsClose = false;
-                }
             }
         }
 
-
         //When blue ghost is vulnerable, then it should run away from Pac-Man
-
         if(blue.getVulnerableTime()>0 || pillIsClose)
         {
             actions[3] = blue.getNextDir(pacmanPosition, false);
@@ -140,10 +133,24 @@ public final class StudentController implements DefenderController
             {
                 actions[3] = blue.getNextDir(pacmanNextMove, true);
             }
-            else{
+            else
+            {
                 actions[3] = blue.getNextDir(pacmanPosition, true);
             }
         }
+
+
+
+        //Pink Ghost
+
+        //Pink ghost should always be chasing Pac-Man
+        if (pacmanNextMove != null)
+            actions[1] = pink.getNextDir(pacmanNextMove, true);
+        else
+            actions[1] = pink.getNextDir(pacmanPosition, true);
+        //When the ghost is vulnerable, flee from Pac-Man.
+        if(pink.getVulnerableTime() > 0)
+            actions[1]= pink.getNextDir(pacmanPosition,false);
 
         return actions;
 	}
