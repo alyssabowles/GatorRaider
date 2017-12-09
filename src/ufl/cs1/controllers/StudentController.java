@@ -18,23 +18,6 @@ public final class StudentController implements DefenderController
 	public int[] update(Game game,long timeDue)
 	{
 
-		/*int[] actions = new int[Game.NUM_DEFENDER];
-		List<Defender> enemies = game.getDefenders();
-
-		//Chooses a random LEGAL action if required. Could be much simpler by simply returning
-		//any random number of all of the ghosts
-		for(int i = 0; i < actions.length; i++)
-		{
-			Defender defender = enemies.get(i);
-			List<Integer> possibleDirs = defender.getPossibleDirs();
-			if (possibleDirs.size() != 0)
-				actions[i]=possibleDirs.get(Game.rng.nextInt(possibleDirs.size()));
-			else
-				actions[i] = -1;
-		}
-		return actions;*/
-
-
         int[] actions = new int[Game.NUM_DEFENDER];
         List<Defender> enemies = game.getDefenders();
 
@@ -47,15 +30,20 @@ public final class StudentController implements DefenderController
         Defender orange = enemies.get(2);
         Defender blue = enemies.get(3);
 
-
+        Node redPosition = red.getLocation();
+        Node orangePosition = orange.getLocation();
+        Node bluePosition = blue.getLocation();
+        Node pinkPosition = pink.getLocation();
 
         //Red ghost
 
-        Node redPosition = red.getLocation();
         Node pacmanPosition = attacker.getLocation();
         Node pacmanNextMove = pacmanPosition.getNeighbor(attacker.getDirection());
         int distAway = redPosition.getPathDistance(pacmanPosition);
         boolean forkPath = redPosition.isJunction();
+        boolean atPill = false;
+        boolean pillIsClose = false;
+        List<Node> pillList = game.getPowerPillList();
 
         /* If the distance from red ghost to pacman is less than 15 tiles, then it should
          * follow Pac-Man.
@@ -63,13 +51,9 @@ public final class StudentController implements DefenderController
         if (distAway < 15)
         {
             if (pacmanNextMove != null)
-            {
                 actions[0] = red.getNextDir(pacmanNextMove, true);
-            }
             else
-            {
                 actions[0] = red.getNextDir(redPosition, false);
-            }
         }
 
         //If there is a junction, red ghost should move the direction Pac-Man is in
@@ -81,8 +65,6 @@ public final class StudentController implements DefenderController
 
         //Orange ghost
 
-        List<Node> pillList = game.getPowerPillList();
-        boolean atPill = false;
 
         /* Orange ghost should be moving around one of the corners of the board,
          * as long as there is a power pill there.
@@ -90,29 +72,25 @@ public final class StudentController implements DefenderController
         for (int i = 0; i < pillList.size(); i++)
         {
             if (game.checkPowerPill(pillList.get(i)) == true)
-            {
                 actions[2] = orange.getNextDir(pillList.get(i), true);
                 atPill = !atPill;
-            }
         }
         //If there are no more power pills, then it will just chase Pac-Man.
         if(pillList.size() == 0)
-        {
             actions[2] = orange.getNextDir(pacmanPosition, true);
-        }
 
 
 
         //Blue ghost
 
         //Determine if Pac man is close to a power pill, so blue can know to run away
-        boolean pillIsClose = false;
 
+        //The for loop determines if the pill is close to Pac-Man
         for (int i = 0; i < pillList.size(); i++)
         {
             if (game.checkPowerPill(pillList.get(i)) == true)
             {
-                if(pacmanPosition.getPathDistance(pillList.get(i)) < 10)
+                if(pacmanPosition.getPathDistance(pillList.get(i)) < 250)
                 {
                     pillIsClose = true;
                     break;
@@ -124,20 +102,15 @@ public final class StudentController implements DefenderController
 
         //When blue ghost is vulnerable, then it should run away from Pac-Man
         if(blue.getVulnerableTime()>0 || pillIsClose)
-        {
             actions[3] = blue.getNextDir(pacmanPosition, false);
-        }
         else
         {
             if (pacmanNextMove != null)
-            {
                 actions[3] = blue.getNextDir(pacmanNextMove, true);
-            }
             else
-            {
                 actions[3] = blue.getNextDir(pacmanPosition, true);
-            }
         }
+
 
 
 
@@ -151,6 +124,7 @@ public final class StudentController implements DefenderController
         //When the ghost is vulnerable, flee from Pac-Man.
         if(pink.getVulnerableTime() > 0)
             actions[1]= pink.getNextDir(pacmanPosition,false);
+
 
         return actions;
 	}
